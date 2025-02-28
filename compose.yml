@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  tresordb:
+    image: mysql
+    container_name: "tresordb"
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: tresordb
+    volumes:
+      - .\db:/docker-entrypoint-initdb.d
+      - C:\docker\tresor-mysql-data:/var/lib/mysql
