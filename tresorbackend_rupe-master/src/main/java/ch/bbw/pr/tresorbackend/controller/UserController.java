@@ -21,6 +21,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -76,8 +77,18 @@ public class UserController {
       }
       System.out.println("UserController.createUser: input validation passed");
 
-      //password validation
-      //todo ergänzen
+      var userByEmail = userService.findByEmail(registerUser.getEmail());
+      var pwd = registerUser.getPassword();
+      var pwdHash = passwordService.hashPassword(pwd);
+      if (!Objects.equals(pwdHash, userByEmail.getPassword())){
+         JsonObject obj = new JsonObject();
+         obj.addProperty("message", "Wrong Email or Password!");
+         String json = new Gson().toJson(obj);
+
+         System.out.println("UserController.createUser, validation fails: " + json);
+         return ResponseEntity.badRequest().body(json);
+      }
+
       System.out.println("UserController.createUser, password validation passed");
 
       //transform registerUser to user
