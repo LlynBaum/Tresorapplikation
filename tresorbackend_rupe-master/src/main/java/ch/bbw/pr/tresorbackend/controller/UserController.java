@@ -79,8 +79,7 @@ public class UserController {
 
       var userByEmail = userService.findByEmail(registerUser.getEmail());
       var pwd = registerUser.getPassword();
-      var pwdHash = passwordService.hashPassword(pwd);
-      if (!Objects.equals(pwdHash, userByEmail.getPassword())){
+      if (!passwordService.checkPassword(pwd, userByEmail.getPassword())) {
          JsonObject obj = new JsonObject();
          obj.addProperty("message", "Wrong Email or Password!");
          String json = new Gson().toJson(obj);
