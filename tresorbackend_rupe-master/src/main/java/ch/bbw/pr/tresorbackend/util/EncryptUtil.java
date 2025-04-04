@@ -10,19 +10,18 @@ import org.jasypt.util.text.AES256TextEncryptor;
  */
 public class EncryptUtil {
 
-   //todo ergänzen!
+   private final AES256TextEncryptor textEncryptor;
 
    public EncryptUtil(String secretKey) {
-      //todo ergänzen!
+      textEncryptor = new AES256TextEncryptor();
+      textEncryptor.setPassword(secretKey);
    }
 
    public String encrypt(String data) {
-      //todo anpassen!
-      return data;
+      return textEncryptor.encrypt(data);
    }
 
    public String decrypt(String data) {
-      //todo anpassen!
-      return data;
+      return textEncryptor.decrypt(data);
    }
 }
