@@ -32,7 +32,7 @@ public class SecretServiceImpl implements SecretService {
 
    @Override
    public List<Secret> getAllSecrets() {
-      return (List<Secret>) secretRepository.findAll();
+      return secretRepository.findAll();
    }
 
    @Override
