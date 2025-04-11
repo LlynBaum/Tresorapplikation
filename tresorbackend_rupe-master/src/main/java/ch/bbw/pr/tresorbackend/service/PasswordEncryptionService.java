@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class PasswordEncryptionService {
-   private final String pepper = "staticPepperValue";
+   private final String pepper = "jabadabadudulustigevogel";
 
    public String hashPassword(String password) {
       // BCrypt automatically handles salting internally

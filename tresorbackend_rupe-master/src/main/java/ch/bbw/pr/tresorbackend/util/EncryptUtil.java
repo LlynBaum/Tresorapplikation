@@ -5,7 +5,6 @@ import org.jasypt.util.text.AES256TextEncryptor;
 /**
  * EncryptUtil
  * Used to encrypt content.
- * Not implemented yet.
  * @author Peter Rutschmann
  */
 public class EncryptUtil {
