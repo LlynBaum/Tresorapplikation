@@ -77,19 +77,6 @@ public class UserController {
       }
       System.out.println("UserController.createUser: input validation passed");
 
-      var userByEmail = userService.findByEmail(registerUser.getEmail());
-      var pwd = registerUser.getPassword();
-      if (!passwordService.checkPassword(pwd, userByEmail.getPassword())) {
-         JsonObject obj = new JsonObject();
-         obj.addProperty("message", "Wrong Email or Password!");
-         String json = new Gson().toJson(obj);
-
-         System.out.println("UserController.createUser, validation fails: " + json);
-         return ResponseEntity.badRequest().body(json);
-      }
-
-      System.out.println("UserController.createUser, password validation passed");
-
       //transform registerUser to user
       User user = new User(
             null,

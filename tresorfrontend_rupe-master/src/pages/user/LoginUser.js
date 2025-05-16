@@ -10,7 +10,7 @@ function LoginUser({loginValues, setLoginValues}) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log(loginValues);
-        navigate('/')
+        navigate('/');
     };
 
     return (
