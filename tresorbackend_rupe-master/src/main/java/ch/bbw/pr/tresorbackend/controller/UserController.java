@@ -201,5 +201,4 @@ public class UserController {
       obj.addProperty("message", "Login successful");
       return ResponseEntity.ok(new Gson().toJson(obj));
    }
-
 }

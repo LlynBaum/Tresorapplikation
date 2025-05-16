@@ -18,6 +18,7 @@ function LoginUser({loginValues, setLoginValues}) {
 
         try {
             const response = await loginUser(loginValues); // Call the login API
+            console.log('Login response:', response);
 
             if (response.status === 200) {
                 setSuccessMessage('Login successful! Redirecting...');
