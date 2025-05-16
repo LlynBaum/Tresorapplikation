@@ -77,7 +77,6 @@ public class UserController {
       }
       System.out.println("UserController.createUser: input validation passed");
 
-      //transform registerUser to user
       User user = new User(
             null,
             registerUser.getFirstName(),
