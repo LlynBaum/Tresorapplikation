@@ -63,6 +63,9 @@ public class SecretController {
             user.getId(),
             new EncryptUtil(newSecret.getEncryptPassword()).encrypt(newSecret.getContent().toString())
       );
+
+      String ka = newSecret.getContent().toString();
+      String sdjlf = new EncryptUtil(newSecret.getEncryptPassword()).encrypt(newSecret.getContent().toString());
       //save secret in db
       secretService.createSecret(secret);
       System.out.println("SecretController.createSecret, secret saved in db");
