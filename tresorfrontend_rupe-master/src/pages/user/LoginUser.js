@@ -6,7 +6,7 @@ import { loginUser } from '../../comunication/FetchUser'; // Import the login fu
  * LoginUser
  * @author Peter Rutschmann
  */
-function LoginUser({loginValues, setLoginValues}) {
+function LoginUser({ loginValues, setLoginValues }) {
     const navigate = useNavigate();
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
@@ -34,41 +34,44 @@ function LoginUser({loginValues, setLoginValues}) {
     };
 
     return (
-        <div>
-            <h2>Login user</h2>
-            <form onSubmit={handleSubmit}>
-                <section>
-                    <aside>
-                        <div>
+        <div className="form-container">
+            <h2 className="form-title">Login User</h2>
+            <form onSubmit={handleSubmit} className="form">
+                <section className="form-section">
+                    <aside className="form-aside">
+                        <div className="form-group">
                             <label>Email:</label>
                             <input
                                 type="text"
+                                className="form-input"
                                 value={loginValues.email}
                                 onChange={(e) =>
-                                    setLoginValues(prevValues => ({...prevValues, email: e.target.value}))}
+                                    setLoginValues(prevValues => ({ ...prevValues, email: e.target.value }))}
                                 required
                                 placeholder="Please enter your email *"
                             />
                         </div>
-                        <div>
+                        <div className="form-group">
                             <label>Password:</label>
                             <input
                                 type="password"
+                                className="form-input"
                                 value={loginValues.password}
                                 onChange={(e) =>
-                                    setLoginValues(prevValues => ({...prevValues, password: e.target.value}))}
+                                    setLoginValues(prevValues => ({ ...prevValues, password: e.target.value }))}
                                 required
                                 placeholder="Please enter your password *"
                             />
                         </div>
                     </aside>
                 </section>
-                <button type="submit">Login</button>
-                {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-                {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+                <button type="submit" className="form-button">Login</button>
+                {errorMessage && <p className="form-error">{errorMessage}</p>}
+                {successMessage && <p className="form-success">{successMessage}</p>}
             </form>
         </div>
     );
 }
 
 export default LoginUser;
+

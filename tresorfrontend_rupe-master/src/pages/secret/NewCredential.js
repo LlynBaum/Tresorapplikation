@@ -6,7 +6,7 @@ import {postSecret} from "../../comunication/FetchSecrets";
  * NewCredential
  * @author Peter Rutschmann
  */
-function NewCredential({loginValues}) {
+const NewCredential = ({loginValues}) => {
     const initialState = {
         kindid: 1,
         kind:"credential",
@@ -35,51 +35,57 @@ function NewCredential({loginValues}) {
     };
 
     return (
-        <div>
-            <h2>Add new credential secret</h2>
-            <form onSubmit={handleSubmit}>
-                <section>
-                    <aside>
-                        <div>
-                            <label>username:</label>
-                            <input
-                                type="text"
-                                value={credentialValues.userName}
-                                onChange={(e) =>
-                                    setCredentialValues(prevValues => ({...prevValues, userName: e.target.value}))}
-                                required
-                                placeholder="Please enter username"
-                            />
-                        </div>
-                        <div>
-                            <label>password:</label>
-                            <input
-                                type="text"
-                                value={credentialValues.password}
-                                onChange={(e) =>
-                                    setCredentialValues(prevValues => ({...prevValues, password: e.target.value}))}
-                                required
-                                placeholder="Please enter password"
-                            />
-                        </div>
-                        <div>
-                            <label>url:</label>
-                            <input
-                                type="text"
-                                value={credentialValues.url}
-                                onChange={(e) =>
-                                    setCredentialValues(prevValues => ({...prevValues, url: e.target.value}))}
-                                required
-                                placeholder="Please enter url"
-                            />
-                        </div>
-                        <button type="submit">save secret</button>
-                        {errorMessage && <p style={{color: 'red'}}>{errorMessage}</p>}
-                    </aside>
-                </section>
+        <div className="card">
+            <h1 className="text-center">Add New Credential Secret</h1>
+            
+            {errorMessage && <div className="error-message">{errorMessage}</div>}
+            
+            <form onSubmit={handleSubmit} className="card">
+                <div className="form-group">
+                    <label htmlFor="username">Username:</label>
+                    <input
+                        id="username"
+                        type="text"
+                        value={credentialValues.userName}
+                        onChange={(e) =>
+                            setCredentialValues(prevValues => ({...prevValues, userName: e.target.value}))}
+                        required
+                        placeholder="Please enter username"
+                    />
+                </div>
+                
+                <div className="form-group">
+                    <label htmlFor="password">Password:</label>
+                    <input
+                        id="password"
+                        type="password"
+                        value={credentialValues.password}
+                        onChange={(e) =>
+                            setCredentialValues(prevValues => ({...prevValues, password: e.target.value}))}
+                        required
+                        placeholder="Please enter password"
+                    />
+                </div>
+                
+                <div className="form-group">
+                    <label htmlFor="url">URL:</label>
+                    <input
+                        id="url"
+                        type="text"
+                        value={credentialValues.url}
+                        onChange={(e) =>
+                            setCredentialValues(prevValues => ({...prevValues, url: e.target.value}))}
+                        required
+                        placeholder="Please enter url"
+                    />
+                </div>
+                
+                <div className="text-center mt-3">
+                    <button type="submit">Save Secret</button>
+                </div>
             </form>
         </div>
     );
-}
+};
 
 export default NewCredential;

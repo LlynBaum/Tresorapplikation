@@ -31,17 +31,18 @@ const Secrets = ({loginValues}) => {
     }, [loginValues]);
 
     return (
-        <>
-            <h1>my secrets</h1>
-            {errorMessage && <p style={{color: 'red'}}>{errorMessage}</p>}
-             <form>
-                <h2>secrets</h2>
-                <table border="1">
+        <div className="card">
+            <h1 className="text-center">My Secrets</h1>
+            {errorMessage && <div className="error-message">{errorMessage}</div>}
+            
+            <div className="card">
+                <h2>Secrets</h2>
+                <table>
                     <thead>
                     <tr>
-                        <th>secret id</th>
-                        <th>user id</th>
-                        <th>content</th>
+                        <th>Secret ID</th>
+                        <th>User ID</th>
+                        <th>Content</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -51,19 +52,21 @@ const Secrets = ({loginValues}) => {
                                 <td>{secret.id}</td>
                                 <td>{secret.userId}</td>
                                 <td>
-                                    <pre>{JSON.stringify(secret.content, null, 2)}</pre>
+                                    <pre style={{whiteSpace: 'pre-wrap', backgroundColor: 'var(--background)', padding: 'var(--spacing-sm)', borderRadius: 'var(--border-radius-sm)'}}>
+                                        {JSON.stringify(secret.content, null, 2)}
+                                    </pre>
                                 </td>
                             </tr>
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="3">No secrets available</td>
+                            <td colSpan="3" className="text-center">No secrets available</td>
                         </tr>
                     )}
                     </tbody>
                 </table>
-            </form>
-        </>
+            </div>
+        </div>
     );
 };
 

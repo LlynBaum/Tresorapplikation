@@ -468,3 +468,76 @@ blockquote footer {
     line-height: var(--line-height);
     padding: 1.5rem 0;
 }
+
+/* Modern Form Styles */
+.form-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: var(--color-bg-secondary);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow) var(--color-shadow);
+}
+
+.form-title {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: var(--color);
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form-section {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.form-aside {
+    flex: 1;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-input {
+    padding: 0.8rem;
+    border: 1px solid var(--color-bg);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+}
+
+.form-button {
+    padding: 0.8rem 1.5rem;
+    background: var(--color);
+    color: var(--color-bg);
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.form-button:hover {
+    background: var(--color-secondary);
+}
+
+.form-error {
+    color: red;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.form-success {
+    color: green;
+    font-size: 0.9rem;
+    text-align: center;
+}
