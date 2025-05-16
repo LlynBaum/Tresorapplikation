@@ -1,4 +1,6 @@
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { loginUser } from '../../comunication/FetchUser'; // Import the login function
 
 /**
  * LoginUser
@@ -6,11 +8,28 @@ import { useNavigate } from 'react-router-dom';
  */
 function LoginUser({loginValues, setLoginValues}) {
     const navigate = useNavigate();
+    const [errorMessage, setErrorMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(loginValues);
-        navigate('/');
+        setErrorMessage('');
+        setSuccessMessage('');
+
+        try {
+            const response = await loginUser(loginValues); // Call the login API
+
+            if (response.status === 200) {
+                setSuccessMessage('Login successful! Redirecting...');
+                setTimeout(() => navigate('/'), 2000); // Redirect after 2 seconds
+            } else if (response.status === 401) {
+                setErrorMessage('Login failed. Invalid email or password.');
+            } else {
+                setErrorMessage('An unexpected error occurred.');
+            }
+        } catch (error) {
+            setErrorMessage(error.message || 'An error occurred during login.');
+        }
     };
 
     return (
@@ -33,7 +52,7 @@ function LoginUser({loginValues, setLoginValues}) {
                         <div>
                             <label>Password:</label>
                             <input
-                                type="text"
+                                type="password"
                                 value={loginValues.password}
                                 onChange={(e) =>
                                     setLoginValues(prevValues => ({...prevValues, password: e.target.value}))}
@@ -44,6 +63,8 @@ function LoginUser({loginValues, setLoginValues}) {
                     </aside>
                 </section>
                 <button type="submit">Login</button>
+                {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+                {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
             </form>
         </div>
     );

@@ -4,6 +4,7 @@ import ch.bbw.pr.tresorbackend.model.ConfigProperties;
 import ch.bbw.pr.tresorbackend.model.EmailAdress;
 import ch.bbw.pr.tresorbackend.model.RegisterUser;
 import ch.bbw.pr.tresorbackend.model.User;
+import ch.bbw.pr.tresorbackend.model.LoginRequest;
 import ch.bbw.pr.tresorbackend.service.PasswordEncryptionService;
 import ch.bbw.pr.tresorbackend.service.UserService;
 
@@ -172,6 +173,34 @@ public class UserController {
       String json = new Gson().toJson(obj);
       System.out.println("UserController.getUserIdByEmail " + json);
       return ResponseEntity.accepted().body(json);
+   }
+
+   // Login endpoint
+   @CrossOrigin(origins = "${CROSS_ORIGIN}")
+   @PostMapping("/login")
+   public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+      System.out.println("UserController.login: Attempting login for email: " + loginRequest.getEmail());
+
+      User user = userService.findByEmail(loginRequest.getEmail());
+      if (user == null) {
+         System.out.println("UserController.login: No user found with email: " + loginRequest.getEmail());
+         JsonObject obj = new JsonObject();
+         obj.addProperty("message", "Invalid email or password");
+         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Gson().toJson(obj));
+      }
+
+      boolean passwordMatches = passwordService.checkPassword(loginRequest.getPassword(), user.getPassword());
+      if (!passwordMatches) {
+         System.out.println("UserController.login: Password mismatch for email: " + loginRequest.getEmail());
+         JsonObject obj = new JsonObject();
+         obj.addProperty("message", "Invalid email or password");
+         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Gson().toJson(obj));
+      }
+
+      System.out.println("UserController.login: Login successful for email: " + loginRequest.getEmail());
+      JsonObject obj = new JsonObject();
+      obj.addProperty("message", "Login successful");
+      return ResponseEntity.ok(new Gson().toJson(obj));
    }
 
 }
