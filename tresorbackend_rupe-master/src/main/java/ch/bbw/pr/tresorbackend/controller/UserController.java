@@ -7,6 +7,7 @@ import ch.bbw.pr.tresorbackend.model.User;
 import ch.bbw.pr.tresorbackend.model.LoginRequest;
 import ch.bbw.pr.tresorbackend.service.PasswordEncryptionService;
 import ch.bbw.pr.tresorbackend.service.UserService;
+import ch.bbw.pr.tresorbackend.service.RecaptchaService;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -16,6 +17,7 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -38,10 +40,11 @@ public class UserController {
    private PasswordEncryptionService passwordService;
    private final ConfigProperties configProperties;
    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+   private RecaptchaService recaptchaService;
 
    @Autowired
    public UserController(ConfigProperties configProperties, UserService userService,
-                         PasswordEncryptionService passwordService) {
+                         PasswordEncryptionService passwordService, RecaptchaService recaptchaService) {
       this.configProperties = configProperties;
       System.out.println("UserController.UserController: cross origin: " + configProperties.getOrigin());
       // Logging in the constructor
@@ -49,15 +52,21 @@ public class UserController {
       logger.debug("UserController.UserController: Cross Origin Config: {}", configProperties.getOrigin());
       this.userService = userService;
       this.passwordService = passwordService;
+      this.recaptchaService = recaptchaService;
    }
 
    // build create User REST API
    @CrossOrigin(origins = "${CROSS_ORIGIN}")
    @PostMapping
    public ResponseEntity<String> createUser(@Valid @RequestBody RegisterUser registerUser, BindingResult bindingResult) {
-      //captcha
-      //todo ergänzen
-
+      // Recaptcha verification
+      if (!recaptchaService.verifyRecaptcha(registerUser.getRecaptchaToken())) {
+         JsonObject obj = new JsonObject();
+         obj.addProperty("message", "Recaptcha verification failed.");
+         String json = new Gson().toJson(obj);
+         logger.warn("UserController.createUser: Recaptcha failed");
+         return ResponseEntity.badRequest().body(json);
+      }
       System.out.println("UserController.createUser: captcha passed.");
 
       //input validation

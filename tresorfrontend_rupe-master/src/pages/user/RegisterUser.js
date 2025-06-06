@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { postUser } from "../../comunication/FetchUser";
+import ReCAPTCHA from "react-google-recaptcha";
 
 /**
  * RegisterUser
@@ -19,6 +20,7 @@ function RegisterUser({ loginValues, setLoginValues }) {
     };
     const [credentials, setCredentials] = useState(initialState);
     const [errorMessage, setErrorMessage] = useState('');
+    const [recaptchaToken, setRecaptchaToken] = useState(null); // State for ReCAPTCHA token
 
     const validatePassword = (password) => {
         const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%/*?&])[A-Za-z\d@/$!%*?&]{8,}$/;
@@ -43,8 +45,15 @@ function RegisterUser({ loginValues, setLoginValues }) {
             return;
         }
 
+        // Validate ReCAPTCHA
+        if (!recaptchaToken) {
+            console.log("ReCAPTCHA not completed");
+            setErrorMessage('Please complete the ReCAPTCHA challenge.');
+            return;
+        }
+
         try {
-            await postUser(credentials);
+            await postUser({ ...credentials, recaptchaToken }); // Include ReCAPTCHA token in the request
             setLoginValues({ userName: credentials.email, password: credentials.password });
             setCredentials(initialState);
             navigate('/');
@@ -124,6 +133,12 @@ function RegisterUser({ loginValues, setLoginValues }) {
                         </div>
                     </aside>
                 </section>
+                <div className="form-group">
+                    <ReCAPTCHA
+                        sitekey={process.env.REACT_APP_CAPCHA_SITE_KEY}
+                        onChange={(token) => setRecaptchaToken(token)} // Update token state on completion
+                    />
+                </div>
                 <button type="submit" className="form-button">Register</button>
                 {errorMessage && <p className="form-error">{errorMessage}</p>}
             </form>
@@ -132,4 +147,3 @@ function RegisterUser({ loginValues, setLoginValues }) {
 }
 
 export default RegisterUser;
-
