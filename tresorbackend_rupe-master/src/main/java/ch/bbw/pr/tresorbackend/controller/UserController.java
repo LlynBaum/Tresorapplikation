@@ -59,16 +59,6 @@ public class UserController {
    @CrossOrigin(origins = "${CROSS_ORIGIN}")
    @PostMapping
    public ResponseEntity<String> createUser(@Valid @RequestBody RegisterUser registerUser, BindingResult bindingResult) {
-      // Recaptcha verification
-      if (!recaptchaService.verifyRecaptcha(registerUser.getRecaptchaToken())) {
-         JsonObject obj = new JsonObject();
-         obj.addProperty("message", "Recaptcha verification failed.");
-         String json = new Gson().toJson(obj);
-         logger.warn("UserController.createUser: Recaptcha failed");
-         return ResponseEntity.badRequest().body(json);
-      }
-      System.out.println("UserController.createUser: captcha passed.");
-
       //input validation
       if (bindingResult.hasErrors()) {
          List<String> errors = bindingResult.getFieldErrors().stream()
@@ -86,6 +76,16 @@ public class UserController {
          return ResponseEntity.badRequest().body(json);
       }
       System.out.println("UserController.createUser: input validation passed");
+
+      // Recaptcha verification
+      if (!recaptchaService.verifyRecaptcha(registerUser.getRecaptchaToken())) {
+         JsonObject obj = new JsonObject();
+         obj.addProperty("message", "Recaptcha verification failed.");
+         String json = new Gson().toJson(obj);
+         logger.warn("UserController.createUser: Recaptcha failed");
+         return ResponseEntity.badRequest().body(json);
+      }
+      System.out.println("UserController.createUser: captcha passed.");
 
       // Password strength validation
       String password = registerUser.getPassword();
