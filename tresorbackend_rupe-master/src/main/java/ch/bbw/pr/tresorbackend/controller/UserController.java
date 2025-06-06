@@ -22,6 +22,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -76,6 +77,18 @@ public class UserController {
          return ResponseEntity.badRequest().body(json);
       }
       System.out.println("UserController.createUser: input validation passed");
+
+      // Password strength validation
+      String password = registerUser.getPassword();
+      String passwordRegex = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+      if (!Pattern.matches(passwordRegex, password)) {
+         System.out.println("UserController.createUser: Password does not meet strength requirements.");
+         JsonObject obj = new JsonObject();
+         obj.addProperty("message", "Password must be at least 8 characters long, include one uppercase letter, one number, and one special character.");
+         String json = new Gson().toJson(obj);
+         return ResponseEntity.badRequest().body(json);
+      }
+      System.out.println("UserController.createUser: Password validation passed");
 
       User user = new User(
             null,

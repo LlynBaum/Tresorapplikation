@@ -20,14 +20,26 @@ function RegisterUser({ loginValues, setLoginValues }) {
     const [credentials, setCredentials] = useState(initialState);
     const [errorMessage, setErrorMessage] = useState('');
 
+    const validatePassword = (password) => {
+        const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        return regex.test(password);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrorMessage('');
 
-        //validate
+        // Validate password confirmation
         if (credentials.password !== credentials.passwordConfirmation) {
             console.log("password != passwordConfirmation");
             setErrorMessage('Password and password-confirmation are not equal.');
+            return;
+        }
+
+        // Validate password strength
+        if (!validatePassword(credentials.password)) {
+            console.log("Invalid password format");
+            setErrorMessage('Password must contain at least one number, one symbol, one capital letter, and be at least 8 characters long.');
             return;
         }
 
