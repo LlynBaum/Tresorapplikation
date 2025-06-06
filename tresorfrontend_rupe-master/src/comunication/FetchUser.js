@@ -79,7 +79,7 @@ export const loginUser = async (credentials) => {
     const API_URL = `${protocol}://${host}${portPart}${path}`;
 
     try {
-        const response = await fetch(`${API_URL}/login`, {
+        const response = await fetch(`${API_URL}/users/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -90,16 +90,10 @@ export const loginUser = async (credentials) => {
             })
         });
 
-        if (!response.ok) {
-            return response; // Return the response object for status handling
-        }
-
-        const data = await response.json();
-        console.log('Login successful:', data);
-        return { ...response, data }; // Include the response and data
+        const data = response.ok ? await response.json() : null;
+        return { ok: response.ok, status: response.status, data }; // Ensure consistent structure
     } catch (error) {
         console.error('Failed to login:', error.message);
         throw new Error('Failed to login. ' || error.message);
     }
 };
-

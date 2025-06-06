@@ -17,13 +17,12 @@ function LoginUser({ loginValues, setLoginValues }) {
         setSuccessMessage('');
 
         try {
-            const response = await loginUser(loginValues); // Call the login API
-            console.log('Login response:', response);
+            const { ok, status } = await loginUser(loginValues); // Destructure the response
 
-            if (response.status === 200) {
+            if (ok) {
                 setSuccessMessage('Login successful! Redirecting...');
                 setTimeout(() => navigate('/'), 2000); // Redirect after 2 seconds
-            } else if (response.status === 401) {
+            } else if (status === 401) {
                 setErrorMessage('Login failed. Invalid email or password.');
             } else {
                 setErrorMessage('An unexpected error occurred.');
@@ -74,4 +73,3 @@ function LoginUser({ loginValues, setLoginValues }) {
 }
 
 export default LoginUser;
-

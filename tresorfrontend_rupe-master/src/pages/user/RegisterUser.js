@@ -21,7 +21,7 @@ function RegisterUser({ loginValues, setLoginValues }) {
     const [errorMessage, setErrorMessage] = useState('');
 
     const validatePassword = (password) => {
-        const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%/*?&])[A-Za-z\d@/$!%*?&]{8,}$/;
         return regex.test(password);
     };
 

@@ -80,7 +80,7 @@ public class UserController {
 
       // Password strength validation
       String password = registerUser.getPassword();
-      String passwordRegex = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+      String passwordRegex = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!/%*?&])[A-Za-z\\d@$!%/*?&]{8,}$";
       if (!Pattern.matches(passwordRegex, password)) {
          System.out.println("UserController.createUser: Password does not meet strength requirements.");
          JsonObject obj = new JsonObject();
