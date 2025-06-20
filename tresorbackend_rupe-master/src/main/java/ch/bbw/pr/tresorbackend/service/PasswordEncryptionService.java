@@ -13,12 +13,12 @@ public class PasswordEncryptionService {
 
    public String hashPassword(String password) {
       // BCrypt automatically handles salting internally
-      String saltedPassword = password + pepper;
-      return new BCryptPasswordEncoder().encode(saltedPassword);
+      String pepperPassword = password + pepper;
+      return new BCryptPasswordEncoder().encode(pepperPassword);
    }
 
    public boolean checkPassword(String rawPassword, String encodedPassword) {
-      String saltedPassword = rawPassword + pepper;
-      return new BCryptPasswordEncoder().matches(saltedPassword, encodedPassword);
+      String pepperPassword = rawPassword + pepper;
+      return new BCryptPasswordEncoder().matches(pepperPassword, encodedPassword);
    }
 }
