@@ -2,9 +2,7 @@ package ch.bbw.pr.tresorbackend.controller;
 
 import ch.bbw.pr.tresorbackend.model.ConfigProperties;
 import ch.bbw.pr.tresorbackend.model.EmailAdress;
-import ch.bbw.pr.tresorbackend.model.RegisterUser;
 import ch.bbw.pr.tresorbackend.model.User;
-import ch.bbw.pr.tresorbackend.model.LoginRequest;
 import ch.bbw.pr.tresorbackend.service.PasswordEncryptionService;
 import ch.bbw.pr.tresorbackend.service.UserService;
 import ch.bbw.pr.tresorbackend.service.RecaptchaService;
@@ -13,7 +11,6 @@ import ch.bbw.pr.tresorbackend.util.JwtUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,11 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.Cookie;
-
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * UserController
@@ -57,68 +50,6 @@ public class UserController {
       this.passwordService = passwordService;
       this.recaptchaService = recaptchaService;
       this.jwtUtil = jwtUtil;
-   }
-
-   // build create User REST API
-   @CrossOrigin(origins = "${CROSS_ORIGIN}")
-   @PostMapping
-   public ResponseEntity<String> createUser(@Valid @RequestBody RegisterUser registerUser, BindingResult bindingResult) {
-      //input validation
-      if (bindingResult.hasErrors()) {
-         List<String> errors = bindingResult.getFieldErrors().stream()
-               .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
-               .toList();
-         System.out.println("UserController.createUser " + errors);
-
-         JsonArray arr = new JsonArray();
-         errors.forEach(arr::add);
-         JsonObject obj = new JsonObject();
-         obj.add("message", arr);
-         String json = new Gson().toJson(obj);
-
-         System.out.println("UserController.createUser, validation fails: " + json);
-         return ResponseEntity.badRequest().body(json);
-      }
-      System.out.println("UserController.createUser: input validation passed");
-
-      // Recaptcha verification
-      if (!recaptchaService.verifyRecaptcha(registerUser.getRecaptchaToken())) {
-         JsonObject obj = new JsonObject();
-         obj.addProperty("message", "Recaptcha verification failed.");
-         String json = new Gson().toJson(obj);
-         logger.warn("UserController.createUser: Recaptcha failed");
-         return ResponseEntity.badRequest().body(json);
-      }
-      System.out.println("UserController.createUser: captcha passed.");
-
-      // Password strength validation
-      String password = registerUser.getPassword();
-      String passwordRegex = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@$!/%*?&])[A-Za-z\\d@$!%/*?&]{8,}$";
-      if (!Pattern.matches(passwordRegex, password)) {
-         System.out.println("UserController.createUser: Password does not meet strength requirements.");
-         JsonObject obj = new JsonObject();
-         obj.addProperty("message", "Password must be at least 8 characters long, include one uppercase letter, one number, and one special character.");
-         String json = new Gson().toJson(obj);
-         return ResponseEntity.badRequest().body(json);
-      }
-      System.out.println("UserController.createUser: Password validation passed");
-
-      User user = new User(
-            null,
-            registerUser.getFirstName(),
-            registerUser.getLastName(),
-            registerUser.getEmail(),
-            passwordService.hashPassword(registerUser.getPassword()),
-              "USER"
-            );
-
-      User savedUser = userService.createUser(user);
-      System.out.println("UserController.createUser, user saved in db");
-      JsonObject obj = new JsonObject();
-      obj.addProperty("answer", "User Saved");
-      String json = new Gson().toJson(obj);
-      System.out.println("UserController.createUser " + json);
-      return ResponseEntity.accepted().body(json);
    }
 
    // build get user by id REST API
@@ -199,40 +130,5 @@ public class UserController {
       String json = new Gson().toJson(obj);
       System.out.println("UserController.getUserIdByEmail " + json);
       return ResponseEntity.accepted().body(json);
-   }
-
-   // Login endpoint
-   @CrossOrigin(origins = "${CROSS_ORIGIN}")
-   @PostMapping("/login")
-   public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-      System.out.println("UserController.login: Attempting login for email: " + loginRequest.getEmail());
-
-      User user = userService.findByEmail(loginRequest.getEmail());
-      if (user == null) {
-         System.out.println("UserController.login: No user found with email: " + loginRequest.getEmail());
-         JsonObject obj = new JsonObject();
-         obj.addProperty("message", "Invalid email or password");
-         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Gson().toJson(obj));
-      }
-
-      boolean passwordMatches = passwordService.checkPassword(loginRequest.getPassword(), user.getPassword());
-      if (!passwordMatches) {
-         System.out.println("UserController.login: Password mismatch for email: " + loginRequest.getEmail());
-         JsonObject obj = new JsonObject();
-         obj.addProperty("message", "Invalid email or password");
-         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Gson().toJson(obj));
-      }
-
-      System.out.println("UserController.login: Login successful for email: " + loginRequest.getEmail());
-      // Generate JWT with user's email and role
-      String jwt = jwtUtil.generateToken(user.getEmail(), List.of(user.getRole()));
-      Cookie jwtCookie = new Cookie("jwt", jwt);
-      jwtCookie.setHttpOnly(true);
-      jwtCookie.setPath("/");
-      jwtCookie.setMaxAge(60 * 60);
-      response.addCookie(jwtCookie);
-      JsonObject obj = new JsonObject();
-      obj.addProperty("message", "Login successful");
-      return ResponseEntity.ok(new Gson().toJson(obj));
    }
 }
