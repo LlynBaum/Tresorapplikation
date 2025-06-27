@@ -85,7 +85,7 @@ public class AuthController {
             obj.addProperty("message", "Invalid email or password");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new Gson().toJson(obj));
         }
-        String jwt = jwtUtil.generateToken(user.getEmail(), List.of(user.getRole()));
+        String jwt = jwtUtil.generateToken(user.getId(), user.getEmail(), List.of(user.getRole()));
         Cookie jwtCookie = new Cookie("jwt", jwt);
         jwtCookie.setHttpOnly(true);
         jwtCookie.setPath("/");
@@ -96,4 +96,3 @@ public class AuthController {
         return ResponseEntity.ok(new Gson().toJson(obj));
     }
 }
-
