@@ -36,7 +36,7 @@ const Layout = ({loginValues}) => {
                         <ul>
                             <li><Link to="/user/users">All users</Link></li>
                             <li>Add user</li>
-                            <li><Link to="/user/users/:id">Edit user</Link></li>
+                            <li><Link to="/secret/secrets">All secrets</Link></li>
                             <li>All secrets</li>
                         </ul>
                     </li>
