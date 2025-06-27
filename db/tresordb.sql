@@ -23,15 +23,6 @@ CREATE TABLE user (
 );
 
 --
--- table user content
---
-
-INSERT INTO `user` (`id`, `first_name`, `last_name`, `email`, `password`) VALUES
-(1, 'Hans', 'Muster', 'hans.muster@bbw.ch', 'abcd'),
-(2, 'Paula', 'Kuster', 'paula.kuster@bbw.ch', 'efgh'),
-(3, 'Andrea', 'Oester', 'andrea.oester@bbw.ch', 'ijkl');
-
---
 -- table secret
 --
 

@@ -62,6 +62,7 @@ public class AuthController {
             obj.addProperty("message", "Password must be at least 8 characters long, include one uppercase letter, one number, and one special character.");
             return ResponseEntity.badRequest().body(new Gson().toJson(obj));
         }
+
         User user = new User(
                 null,
                 registerUser.getFirstName(),
@@ -88,8 +89,7 @@ public class AuthController {
         Cookie jwtCookie = new Cookie("jwt", jwt);
         jwtCookie.setHttpOnly(true);
         jwtCookie.setPath("/");
-        jwtCookie.setMaxAge(60 * 60); // 1 hour
-        // jwtCookie.setSecure(true); // Uncomment if using HTTPS
+        jwtCookie.setMaxAge(60 * 60);
         response.addCookie(jwtCookie);
         JsonObject obj = new JsonObject();
         obj.addProperty("message", "Login successful");

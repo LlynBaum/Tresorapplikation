@@ -43,7 +43,7 @@ export const postUser = async (content) => {
     const API_URL = `${protocol}://${host}${portPart}${path}`;
 
     try {
-        const response = await fetch(`${API_URL}/users`, {
+        const response = await fetch(`${API_URL}/auth/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -80,7 +80,7 @@ export const loginUser = async (credentials) => {
     const API_URL = `${protocol}://${host}${portPart}${path}`;
 
     try {
-        const response = await fetch(`${API_URL}/users/login`, {
+        const response = await fetch(`${API_URL}/auth/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
