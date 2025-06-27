@@ -8,6 +8,7 @@ import ch.bbw.pr.tresorbackend.model.LoginRequest;
 import ch.bbw.pr.tresorbackend.service.PasswordEncryptionService;
 import ch.bbw.pr.tresorbackend.service.UserService;
 import ch.bbw.pr.tresorbackend.service.RecaptchaService;
+import ch.bbw.pr.tresorbackend.util.JwtUtil;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -17,15 +18,16 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Cookie;
+
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * UserController
@@ -41,10 +43,11 @@ public class UserController {
    private final ConfigProperties configProperties;
    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
    private RecaptchaService recaptchaService;
+   private final JwtUtil jwtUtil;
 
    @Autowired
    public UserController(ConfigProperties configProperties, UserService userService,
-                         PasswordEncryptionService passwordService, RecaptchaService recaptchaService) {
+                         PasswordEncryptionService passwordService, RecaptchaService recaptchaService, JwtUtil jwtUtil) {
       this.configProperties = configProperties;
       System.out.println("UserController.UserController: cross origin: " + configProperties.getOrigin());
       // Logging in the constructor
@@ -53,6 +56,7 @@ public class UserController {
       this.userService = userService;
       this.passwordService = passwordService;
       this.recaptchaService = recaptchaService;
+      this.jwtUtil = jwtUtil;
    }
 
    // build create User REST API
@@ -63,7 +67,7 @@ public class UserController {
       if (bindingResult.hasErrors()) {
          List<String> errors = bindingResult.getFieldErrors().stream()
                .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
-               .collect(Collectors.toList());
+               .toList();
          System.out.println("UserController.createUser " + errors);
 
          JsonArray arr = new JsonArray();
@@ -104,7 +108,8 @@ public class UserController {
             registerUser.getFirstName(),
             registerUser.getLastName(),
             registerUser.getEmail(),
-            passwordService.hashPassword(registerUser.getPassword())
+            passwordService.hashPassword(registerUser.getPassword()),
+              "USER"
             );
 
       User savedUser = userService.createUser(user);
@@ -163,7 +168,7 @@ public class UserController {
       if (bindingResult.hasErrors()) {
          List<String> errors = bindingResult.getFieldErrors().stream()
                .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
-               .collect(Collectors.toList());
+               .toList();
          System.out.println("UserController.createUser " + errors);
 
          JsonArray arr = new JsonArray();
@@ -199,7 +204,7 @@ public class UserController {
    // Login endpoint
    @CrossOrigin(origins = "${CROSS_ORIGIN}")
    @PostMapping("/login")
-   public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+   public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
       System.out.println("UserController.login: Attempting login for email: " + loginRequest.getEmail());
 
       User user = userService.findByEmail(loginRequest.getEmail());
@@ -219,6 +224,13 @@ public class UserController {
       }
 
       System.out.println("UserController.login: Login successful for email: " + loginRequest.getEmail());
+      // Generate JWT with user's email and role
+      String jwt = jwtUtil.generateToken(user.getEmail(), List.of(user.getRole()));
+      Cookie jwtCookie = new Cookie("jwt", jwt);
+      jwtCookie.setHttpOnly(true);
+      jwtCookie.setPath("/");
+      jwtCookie.setMaxAge(60 * 60);
+      response.addCookie(jwtCookie);
       JsonObject obj = new JsonObject();
       obj.addProperty("message", "Login successful");
       return ResponseEntity.ok(new Gson().toJson(obj));
