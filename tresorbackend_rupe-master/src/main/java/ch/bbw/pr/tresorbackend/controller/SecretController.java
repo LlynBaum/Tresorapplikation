@@ -38,7 +38,7 @@ public class SecretController {
    // create secret REST API
    @CrossOrigin(origins = "${CROSS_ORIGIN}")
    @PostMapping
-   public ResponseEntity<String> createSecret2(@Valid @RequestBody NewSecret newSecret, BindingResult bindingResult, @RequestHeader("Authorization") String authHeader) {
+   public ResponseEntity<String> createSecret2(@Valid @RequestBody NewSecret newSecret, BindingResult bindingResult, @CookieValue("jwt") String jwt) {
       //input validation
       if (bindingResult.hasErrors()) {
          List<String> errors = bindingResult.getFieldErrors().stream()
@@ -57,12 +57,7 @@ public class SecretController {
       }
       System.out.println("SecretController.createSecret, input validation passed");
 
-      // Extract JWT token
-      String token = authHeader;
-      if (authHeader.startsWith("Bearer ")) {
-         token = authHeader.substring(7);
-      }
-      Long userId = jwtUtil.extractUserId(token);
+      Long userId = jwtUtil.extractUserId(jwt);
       User user = userService.getUserById(userId);
       if (user == null) {
          JsonObject obj = new JsonObject();
@@ -91,12 +86,8 @@ public class SecretController {
    // Build Get Secrets for Current User REST API
    @CrossOrigin(origins = "${CROSS_ORIGIN}")
    @GetMapping("/user")
-   public ResponseEntity<List<Secret>> getSecretsForCurrentUser(@RequestHeader("Authorization") String authHeader) {
-      String token = authHeader;
-      if (authHeader.startsWith("Bearer ")) {
-         token = authHeader.substring(7);
-      }
-      Long userId = jwtUtil.extractUserId(token);
+   public ResponseEntity<List<Secret>> getSecretsForCurrentUser(@CookieValue("jwt") String jwt) {
+      Long userId = jwtUtil.extractUserId(jwt);
       User user = userService.getUserById(userId);
       if (user == null) {
          return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -181,6 +172,7 @@ public class SecretController {
    public ResponseEntity<String> updateSecret(
          @PathVariable("id") Long secretId,
          @Valid @RequestBody NewSecret newSecret,
+         @CookieValue("jwt") String jwt,
          BindingResult bindingResult) {
       //input validation
       if (bindingResult.hasErrors()) {
@@ -199,6 +191,9 @@ public class SecretController {
          return ResponseEntity.badRequest().body(json);
       }
 
+      Long userId = jwtUtil.extractUserId(jwt);
+      User user = userService.getUserById(userId);
+
       //get Secret with id
       Secret dbSecrete = secretService.getSecretById(secretId);
       if(dbSecrete == null){
@@ -209,7 +204,6 @@ public class SecretController {
          System.out.println("SecretController.updateSecret failed:" + json);
          return ResponseEntity.badRequest().body(json);
       }
-      User user = userService.findByEmail(newSecret.getEmail());
 
       //check if Secret in db has not same userid
       if(dbSecrete.getUserId() != user.getId()){
@@ -220,9 +214,10 @@ public class SecretController {
          System.out.println("SecretController.updateSecret failed:" + json);
          return ResponseEntity.badRequest().body(json);
       }
+
       //check if Secret can be decrypted with password
       try {
-         new EncryptUtil(newSecret.getEncryptPassword()).decrypt(dbSecrete.getContent());
+         new EncryptUtil(user.getPassword()).decrypt(dbSecrete.getContent());
       } catch (EncryptionOperationNotPossibleException e) {
          System.out.println("SecretController.updateSecret, invalid password");
          JsonObject obj = new JsonObject();
@@ -235,7 +230,7 @@ public class SecretController {
       Secret secret = new Secret(
             secretId,
             user.getId(),
-            new EncryptUtil(newSecret.getEncryptPassword()).encrypt(newSecret.getContent().toString())
+            new EncryptUtil(user.getPassword()).encrypt(newSecret.getContent().toString())
       );
       Secret updatedSecret = secretService.updateSecret(secret);
       //save secret in db
