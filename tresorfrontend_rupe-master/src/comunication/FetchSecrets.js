@@ -20,8 +20,6 @@ export const postSecret = async ({loginValues, content}) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                email: loginValues.email,
-                encryptPassword: loginValues.password,
                 content: content
             })
         });
@@ -41,7 +39,7 @@ export const postSecret = async ({loginValues, content}) => {
 };
 
 //get all secrets for a user identified by its email
-export const getSecretsforUser = async (loginValues) => {
+export const getSecretsforUser = async () => {
     const protocol = process.env.REACT_APP_API_PROTOCOL; // "http"
     const host = process.env.REACT_APP_API_HOST; // "localhost"
     const port = process.env.REACT_APP_API_PORT; // "8080"
@@ -50,16 +48,7 @@ export const getSecretsforUser = async (loginValues) => {
     const API_URL = `${protocol}://${host}${portPart}${path}`;
 
     try {
-        const response = await fetch(`${API_URL}/secrets/byemail`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                email: loginValues.email,
-                encryptPassword: loginValues.password
-            })
-        });
+        const response = await fetch(`${API_URL}/secrets`);
 
         if (!response.ok) {
             const errorData = await response.json();
