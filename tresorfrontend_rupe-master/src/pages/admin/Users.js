@@ -6,7 +6,7 @@ import {getUsers} from "../../comunication/FetchUser";
  * Users
  * @author Peter Rutschmann
  */
-const Users = ({loginValues}) => {
+const Users = () => {
     const [users, setUsers] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -22,7 +22,7 @@ const Users = ({loginValues}) => {
             }
         };
         fetchUsers();
-    }, [loginValues]);
+    }, []);
 
     return (
         <>

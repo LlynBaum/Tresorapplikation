@@ -1,6 +1,6 @@
 import '../../App.css';
 import React, {useEffect, useState} from 'react';
-import {getSecretsforUser} from "../../comunication/FetchSecrets";
+import {getSecrets} from "../../comunication/FetchSecrets";
 
 /**
  * Secrets
@@ -14,7 +14,7 @@ const Secrets = () => {
         const fetchSecrets = async () => {
             setErrorMessage('');
             try {
-                const data = await getSecretsforUser();
+                const data = await getSecrets();
                 console.log(data);
                 setSecrets(data);
             } catch (error) {

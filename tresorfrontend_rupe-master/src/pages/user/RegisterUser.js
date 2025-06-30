@@ -7,7 +7,7 @@ import ReCAPTCHA from "react-google-recaptcha";
  * RegisterUser
  * @author Peter Rutschmann
  */
-function RegisterUser({ loginValues, setLoginValues }) {
+function RegisterUser() {
     const navigate = useNavigate();
 
     const initialState = {
@@ -54,7 +54,6 @@ function RegisterUser({ loginValues, setLoginValues }) {
 
         try {
             await postUser({ ...credentials, recaptchaToken }); // Include ReCAPTCHA token in the request
-            setLoginValues({ userName: credentials.email, password: credentials.password });
             setCredentials(initialState);
             navigate('/');
         } catch (error) {

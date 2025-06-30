@@ -6,10 +6,11 @@ import { loginUser } from '../../comunication/FetchUser'; // Import the login fu
  * LoginUser
  * @author Peter Rutschmann
  */
-function LoginUser({ loginValues, setLoginValues }) {
+function LoginUser() {
     const navigate = useNavigate();
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+    const [loginValues, setLoginValues] = useState({email: '', password: ''});
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -17,7 +18,7 @@ function LoginUser({ loginValues, setLoginValues }) {
         setSuccessMessage('');
 
         try {
-            const { ok, status } = await loginUser(loginValues); // Destructure the response
+            const { ok, status } = await loginUser(); // Destructure the response
 
             if (ok) {
                 setSuccessMessage('Login successful! Redirecting...');

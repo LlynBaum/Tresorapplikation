@@ -4,15 +4,12 @@ import { Outlet, Link } from "react-router-dom";
  * Layout
  * @author Peter Rutschmann
  */
-const Layout = ({loginValues}) => {
+const Layout = () => {
     return (
         <>
             <nav>
                 <div className="nav-header">
                     <h1>The secret tresor application</h1>
-                    <div className={`user-status ${loginValues.email ? 'logged-in' : ''}`}>
-                        {loginValues.email === '' ? 'No user logged in' : 'User: ' + loginValues.email}
-                    </div>
                 </div>
                 <ul>
                     <li>
@@ -34,10 +31,8 @@ const Layout = ({loginValues}) => {
                     <li>
                         <a href="/">Admin</a>
                         <ul>
-                            <li><Link to="/user/users">All users</Link></li>
-                            <li>Add user</li>
-                            <li><Link to="/secret/secrets">All secrets</Link></li>
-                            <li>All secrets</li>
+                            <li><Link to="/admin/users">All users</Link></li>
+                            <li><Link to="/admin/secrets">All secrets</Link></li>
                         </ul>
                     </li>
                     <li>

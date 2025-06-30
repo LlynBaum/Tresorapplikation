@@ -90,7 +90,7 @@ public class SecretController {
 
    // Build Get Secrets for Current User REST API
    @CrossOrigin(origins = "${CROSS_ORIGIN}")
-   @GetMapping
+   @GetMapping("/user")
    public ResponseEntity<List<Secret>> getSecretsForCurrentUser(@RequestHeader("Authorization") String authHeader) {
       String token = authHeader;
       if (authHeader.startsWith("Bearer ")) {

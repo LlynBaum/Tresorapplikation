@@ -6,7 +6,7 @@ import {postSecret} from "../../comunication/FetchSecrets";
  * NewCredential
  * @author Peter Rutschmann
  */
-const NewCredential = ({loginValues}) => {
+const NewCredential = () => {
     const initialState = {
         kindid: 1,
         kind:"credential",
@@ -22,10 +22,9 @@ const NewCredential = ({loginValues}) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrorMessage('');
-        console.log(loginValues)
         try {
             const content = credentialValues;
-            await postSecret({loginValues, content});
+            await postSecret({content});
             setCredentialValues(initialState);
             navigate('/secret/secrets');
         } catch (error) {
