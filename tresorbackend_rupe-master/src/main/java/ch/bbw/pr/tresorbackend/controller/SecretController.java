@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,8 +65,6 @@ public class SecretController {
             new EncryptUtil(newSecret.getEncryptPassword()).encrypt(newSecret.getContent().toString())
       );
 
-      String ka = newSecret.getContent().toString();
-      String sdjlf = new EncryptUtil(newSecret.getEncryptPassword()).encrypt(newSecret.getContent().toString());
       //save secret in db
       secretService.createSecret(secret);
       System.out.println("SecretController.createSecret, secret saved in db");
@@ -132,6 +131,7 @@ public class SecretController {
    // http://localhost:8080/api/secrets
    @CrossOrigin(origins = "${CROSS_ORIGIN}")
    @GetMapping
+   @PreAuthorize("hasRole('ADMIN')")
    public ResponseEntity<List<Secret>> getAllSecrets() {
       List<Secret> secrets = secretService.getAllSecrets();
       return new ResponseEntity<>(secrets, HttpStatus.OK);

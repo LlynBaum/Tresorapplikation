@@ -3,10 +3,7 @@ package ch.bbw.pr.tresorbackend.controller;
 import ch.bbw.pr.tresorbackend.model.ConfigProperties;
 import ch.bbw.pr.tresorbackend.model.EmailAdress;
 import ch.bbw.pr.tresorbackend.model.User;
-import ch.bbw.pr.tresorbackend.service.PasswordEncryptionService;
 import ch.bbw.pr.tresorbackend.service.UserService;
-import ch.bbw.pr.tresorbackend.service.RecaptchaService;
-import ch.bbw.pr.tresorbackend.util.JwtUtil;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -17,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,24 +30,15 @@ import java.util.List;
 public class UserController {
 
    private UserService userService;
-   private PasswordEncryptionService passwordService;
-   private final ConfigProperties configProperties;
    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
-   private RecaptchaService recaptchaService;
-   private final JwtUtil jwtUtil;
 
    @Autowired
-   public UserController(ConfigProperties configProperties, UserService userService,
-                         PasswordEncryptionService passwordService, RecaptchaService recaptchaService, JwtUtil jwtUtil) {
-      this.configProperties = configProperties;
+   public UserController(ConfigProperties configProperties, UserService userService) {
       System.out.println("UserController.UserController: cross origin: " + configProperties.getOrigin());
       // Logging in the constructor
       logger.info("UserController initialized: " + configProperties.getOrigin());
       logger.debug("UserController.UserController: Cross Origin Config: {}", configProperties.getOrigin());
       this.userService = userService;
-      this.passwordService = passwordService;
-      this.recaptchaService = recaptchaService;
-      this.jwtUtil = jwtUtil;
    }
 
    // build get user by id REST API
@@ -65,6 +54,7 @@ public class UserController {
    // http://localhost:8080/api/users
    @CrossOrigin(origins = "${CROSS_ORIGIN}")
    @GetMapping
+   @PreAuthorize("hasRole('ADMIN')")
    public ResponseEntity<List<User>> getAllUsers() {
       List<User> users = userService.getAllUsers();
       return new ResponseEntity<>(users, HttpStatus.OK);
