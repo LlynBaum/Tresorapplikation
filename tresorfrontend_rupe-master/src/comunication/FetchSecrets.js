@@ -15,6 +15,7 @@ export const postSecret = async ({content}) => {
     try {
         const response = await fetch(`${API_URL}/secrets`, {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -47,7 +48,9 @@ export const getSecretsforUser = async () => {
     const API_URL = `${protocol}://${host}${portPart}${path}`;
 
     try {
-        const response = await fetch(`${API_URL}/secrets/user`);
+        const response = await fetch(`${API_URL}/secrets/user`, {
+            credentials: 'include'
+        });
 
         if (!response.ok) {
             const errorData = await response.json();
@@ -71,7 +74,9 @@ export const getSecrets = async () => {
     const API_URL = `${protocol}://${host}${portPart}${path}`;
 
     try {
-        const response = await fetch(`${API_URL}/secrets`);
+        const response = await fetch(`${API_URL}/secrets`, {
+            credentials: 'include'
+        });
 
         if (!response.ok) {
             const errorData = await response.json();

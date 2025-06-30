@@ -18,7 +18,7 @@ function LoginUser() {
         setSuccessMessage('');
 
         try {
-            const { ok, status } = await loginUser(); // Destructure the response
+            const { ok, status } = await loginUser(loginValues); // Destructure the response
 
             if (ok) {
                 setSuccessMessage('Login successful! Redirecting...');

@@ -83,6 +83,28 @@ public class SecretController {
       return ResponseEntity.accepted().body(json);
    }
 
+   // Build Get All Secrets REST API
+   // http://localhost:8080/api/secrets
+   @CrossOrigin(origins = "${CROSS_ORIGIN}")
+   @GetMapping
+   @PreAuthorize("hasRole('ADMIN')")
+   public ResponseEntity<List<Secret>> getAllSecrets() {
+      List<Secret> secrets = secretService.getAllSecrets();
+      for (Secret secret : secrets) {
+         User user = userService.getUserById(secret.getUserId());
+         if (user != null) {
+            try {
+               secret.setContent(new EncryptUtil(user.getPassword()).decrypt(secret.getContent()));
+            } catch (Exception e) {
+               secret.setContent("not encryptable. Wrong password?");
+            }
+         } else {
+            secret.setContent("user not found");
+         }
+      }
+      return new ResponseEntity<>(secrets, HttpStatus.OK);
+   }
+
    // Build Get Secrets for Current User REST API
    @CrossOrigin(origins = "${CROSS_ORIGIN}")
    @GetMapping("/user")
@@ -153,16 +175,6 @@ public class SecretController {
 
       System.out.println("SecretController.getSecretsByEmail " + secrets);
       return ResponseEntity.ok(secrets);
-   }
-
-   // Build Get All Secrets REST API
-   // http://localhost:8080/api/secrets
-   @CrossOrigin(origins = "${CROSS_ORIGIN}")
-   @GetMapping
-   @PreAuthorize("hasRole('ADMIN')")
-   public ResponseEntity<List<Secret>> getAllSecrets() {
-      List<Secret> secrets = secretService.getAllSecrets();
-      return new ResponseEntity<>(secrets, HttpStatus.OK);
    }
 
    // Build Update Secrete REST API

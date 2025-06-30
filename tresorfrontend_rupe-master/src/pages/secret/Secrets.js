@@ -1,6 +1,7 @@
 import '../../App.css';
 import React, {useEffect, useState} from 'react';
 import {getSecretsforUser} from "../../comunication/FetchSecrets";
+import { useLocation } from 'react-router-dom';
 
 /**
  * Secrets
@@ -9,6 +10,7 @@ import {getSecretsforUser} from "../../comunication/FetchSecrets";
 const Secrets = () => {
     const [secrets, setSecrets] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
+    const location = useLocation();
 
     useEffect(() => {
         const fetchSecrets = async () => {
@@ -23,7 +25,7 @@ const Secrets = () => {
             }
         };
         fetchSecrets();
-    }, []);
+    }, [location]);
 
     return (
         <div className="card">

@@ -1,6 +1,7 @@
 import '../../App.css';
 import React, {useEffect, useState} from 'react';
 import {getSecrets} from "../../comunication/FetchSecrets";
+import { useLocation } from 'react-router-dom';
 
 /**
  * Secrets
@@ -9,6 +10,7 @@ import {getSecrets} from "../../comunication/FetchSecrets";
 const Secrets = () => {
     const [secrets, setSecrets] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
+    const location = useLocation();
 
     useEffect(() => {
         const fetchSecrets = async () => {
@@ -23,11 +25,11 @@ const Secrets = () => {
             }
         };
         fetchSecrets();
-    }, []);
+    }, [location]);
 
     return (
         <div className="card">
-            <h1 className="text-center">My Secrets</h1>
+            <h1 className="text-center">All Secrets</h1>
             {errorMessage && <div className="error-message">{errorMessage}</div>}
             
             <div className="card">

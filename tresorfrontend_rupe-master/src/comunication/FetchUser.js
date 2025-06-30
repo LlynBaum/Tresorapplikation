@@ -15,6 +15,7 @@ export const getUsers = async () => {
     try {
         const response = await fetch(`${API_URL}/users`, {
             method: 'Get',
+            credentials: 'include',
             headers: {
                 'Accept': 'application/json'
             }
@@ -82,10 +83,10 @@ export const loginUser = async (credentials) => {
     try {
         const response = await fetch(`${API_URL}/auth/login`, {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json'
             },
-            credentials: 'include',
             body: JSON.stringify({
                 email: credentials.email,
                 password: credentials.password

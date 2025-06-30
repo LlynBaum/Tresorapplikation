@@ -43,7 +43,7 @@ public class AuthController {
         if (bindingResult.hasErrors()) {
             List<String> errors = bindingResult.getFieldErrors().stream()
                     .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
-                    .collect(Collectors.toList());
+                    .toList();
             JsonArray arr = new JsonArray();
             errors.forEach(arr::add);
             JsonObject obj = new JsonObject();

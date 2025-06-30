@@ -8,7 +8,8 @@ import NoPage from "./pages/NoPage";
 import Users from './pages/admin/Users';
 import LoginUser from "./pages/user/LoginUser";
 import RegisterUser from "./pages/user/RegisterUser";
-import Secrets from "./pages/secret/Secrets";
+import SecretsUser from "./pages/secret/Secrets";
+import SecretsAdmin from "./pages/admin/Secrets";
 import NewCredential from "./pages/secret/NewCredential";
 import NewCreditCard from "./pages/secret/NewCreditCard";
 import NewNote from "./pages/secret/NewNote";
@@ -23,11 +24,11 @@ function App() {
             <Routes>
                 <Route path="/" element={<Layout />}>
                     <Route index element={<Home/>}/>
-                    <Route path="/admin/secrets" element={<Secrets/>}/>
+                    <Route path="/admin/secrets" element={<SecretsAdmin/>}/>
                     <Route path="/admin/users" element={<Users/>}/>
                     <Route path="/user/login" element={<LoginUser/>}/>
                     <Route path="/user/register" element={<RegisterUser/>}/>
-                    <Route path="/secret/secrets" element={<Secrets/>}/>
+                    <Route path="/secret/secrets" element={<SecretsUser/>}/>
                     <Route path="/secret/newcredential" element={<NewCredential/>}/>
                     <Route path="/secret/newcreditcard" element={<NewCreditCard/>}/>
                     <Route path="/secret/newnote" element={<NewNote/>}/>

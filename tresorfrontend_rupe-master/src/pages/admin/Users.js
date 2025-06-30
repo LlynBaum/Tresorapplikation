@@ -1,6 +1,7 @@
 import '../../App.css';
 import React, {useEffect, useState} from "react";
 import {getUsers} from "../../comunication/FetchUser";
+import { useLocation } from 'react-router-dom';
 
 /**
  * Users
@@ -9,6 +10,7 @@ import {getUsers} from "../../comunication/FetchUser";
 const Users = () => {
     const [users, setUsers] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
+    const location = useLocation();
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -22,7 +24,7 @@ const Users = () => {
             }
         };
         fetchUsers();
-    }, []);
+    }, [location]);
 
     return (
         <>
