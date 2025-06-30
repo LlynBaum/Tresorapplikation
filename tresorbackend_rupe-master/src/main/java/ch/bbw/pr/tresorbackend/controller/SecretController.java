@@ -7,6 +7,7 @@ import ch.bbw.pr.tresorbackend.model.User;
 import ch.bbw.pr.tresorbackend.service.SecretService;
 import ch.bbw.pr.tresorbackend.service.UserService;
 import ch.bbw.pr.tresorbackend.util.EncryptUtil;
+import ch.bbw.pr.tresorbackend.util.JwtUtil;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -20,7 +21,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * SecretController
@@ -33,16 +33,17 @@ public class SecretController {
 
    private SecretService secretService;
    private UserService userService;
+   private JwtUtil jwtUtil;
 
    // create secret REST API
    @CrossOrigin(origins = "${CROSS_ORIGIN}")
    @PostMapping
-   public ResponseEntity<String> createSecret2(@Valid @RequestBody NewSecret newSecret, BindingResult bindingResult) {
+   public ResponseEntity<String> createSecret2(@Valid @RequestBody NewSecret newSecret, BindingResult bindingResult, @RequestHeader("Authorization") String authHeader) {
       //input validation
       if (bindingResult.hasErrors()) {
          List<String> errors = bindingResult.getFieldErrors().stream()
                .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
-               .collect(Collectors.toList());
+               .toList();
          System.out.println("SecretController.createSecret " + errors);
 
          JsonArray arr = new JsonArray();
@@ -56,13 +57,25 @@ public class SecretController {
       }
       System.out.println("SecretController.createSecret, input validation passed");
 
-      User user = userService.findByEmail(newSecret.getEmail());
+      // Extract JWT token
+      String token = authHeader;
+      if (authHeader.startsWith("Bearer ")) {
+         token = authHeader.substring(7);
+      }
+      Long userId = jwtUtil.extractUserId(token);
+      User user = userService.getUserById(userId);
+      if (user == null) {
+         JsonObject obj = new JsonObject();
+         obj.addProperty("answer", "User not found");
+         String json = new Gson().toJson(obj);
+         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(json);
+      }
 
-      //transfer secret and encrypt content
+      // Use password from DB to encrypt
       Secret secret = new Secret(
             null,
             user.getId(),
-            new EncryptUtil(newSecret.getEncryptPassword()).encrypt(newSecret.getContent().toString())
+            new EncryptUtil(user.getPassword()).encrypt(newSecret.getContent().toString())
       );
 
       //save secret in db
@@ -73,6 +86,30 @@ public class SecretController {
       String json = new Gson().toJson(obj);
       System.out.println("SecretController.createSecret " + json);
       return ResponseEntity.accepted().body(json);
+   }
+
+   // Build Get Secrets for Current User REST API
+   @CrossOrigin(origins = "${CROSS_ORIGIN}")
+   @GetMapping
+   public ResponseEntity<List<Secret>> getSecretsForCurrentUser(@RequestHeader("Authorization") String authHeader) {
+      String token = authHeader;
+      if (authHeader.startsWith("Bearer ")) {
+         token = authHeader.substring(7);
+      }
+      Long userId = jwtUtil.extractUserId(token);
+      User user = userService.getUserById(userId);
+      if (user == null) {
+         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+      }
+      List<Secret> secrets = secretService.getSecretsByUserId(user.getId());
+      for (Secret secret : secrets) {
+         try {
+            secret.setContent(new EncryptUtil(user.getPassword()).decrypt(secret.getContent()));
+         } catch (Exception e) {
+            secret.setContent("not encryptable. Wrong password?");
+         }
+      }
+      return ResponseEntity.ok(secrets);
    }
 
    // Build Get Secrets by userId REST API
@@ -149,7 +186,7 @@ public class SecretController {
       if (bindingResult.hasErrors()) {
          List<String> errors = bindingResult.getFieldErrors().stream()
                .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
-               .collect(Collectors.toList());
+               .toList();
          System.out.println("SecretController.createSecret " + errors);
 
          JsonArray arr = new JsonArray();
